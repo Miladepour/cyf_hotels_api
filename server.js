@@ -2,6 +2,9 @@ const express = require("express");
 const app = express();
 const { Pool } = require("pg");
 
+const bodyParser = require("body-parser");
+app.use(bodyParser.json());
+
 app.get("/", (req, res) => {
   res.send("Hotel Database Project Home Page");
 });
@@ -52,6 +55,29 @@ app.get("/customers/by_city/:city", function (req, res) {
       }
     }
   );
+});
+
+app.post("/customers", function (req, res) {
+  const newName = req.body.name;
+  const newEmail = req.body.email;
+  const newPhone = req.body.phone;
+  const newCountry = req.body.country;
+
+  if (!newName || !newEmail || !newPhone || !newCountry) {
+    return res.status(400).send("Missing required field(s).");
+  }
+
+  const query =
+    "INSERT INTO customers (name, email, phone, country) " +
+    "VALUES ($1, $2, $3, $4)";
+
+  db.query(query, [newName, newEmail, newPhone, newCountry], (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Error creating customer.");
+    }
+    res.send("New customer added.");
+  });
 });
 
 app.listen(3000, function () {
