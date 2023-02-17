@@ -69,14 +69,45 @@ app.post("/customers", function (req, res) {
 
   const query =
     "INSERT INTO customers (name, email, phone, country) " +
-    "VALUES ($1, $2, $3, $4)";
+    "VALUES ($1, $2, $3, $4) returning id";
 
-  db.query(query, [newName, newEmail, newPhone, newCountry], (err) => {
+  db.query(query, [newName, newEmail, newPhone, newCountry], (err, result) => {
     if (err) {
       console.error(err);
       return res.status(500).send("Error creating customer.");
     }
-    res.send("New customer added.");
+    const newID = result.rows[0].id;
+    res.send(`New customer added. New Id = ${newID}`);
+  });
+});
+
+app.put("/customers/:id", function (req, res) {
+  const custID = req.params.id;
+  const newEmail = req.body.email;
+  const newPhone = req.body.phone;
+
+  const query = "UPDATE customers SET email=$2, phone=$3 WHERE id=$1";
+
+  db.query(query, [custID, newEmail, newPhone], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Error updating customer.");
+    }
+    res.send(`Customer Id = ${custID} information updated`);
+  });
+});
+
+app.delete("/customers/:id", function (req, res) {
+  const custID = req.params.id;
+
+  const query = "DELETE FROM customers WHERE id=$1";
+
+  db.query(query, [custID], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Error updating customer.");
+    }
+    res.send(`Customer Id = ${custID} has been deleted.`);
   });
 });
 
