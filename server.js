@@ -105,7 +105,7 @@ app.delete("/customers/:id", function (req, res) {
   db.query(query, [custID], (err, result) => {
     if (err) {
       console.error(err);
-      return res.status(500).send("Error updating customer.");
+      return res.status(500).send("Error deleting customer.");
     }
     res.send(`Customer Id = ${custID} has been deleted.`);
   });
