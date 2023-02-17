@@ -36,6 +36,23 @@ app.get("/customers/:id", function (req, res) {
     }
   );
 });
+app.get("/customers/by_city/:city", function (req, res) {
+  const city = req.params.city;
+  console.log(city);
+  db.query(
+    "SELECT id, name, city, phone FROM customers WHERE city like $1 || '%'",
+    [city],
+    function (err, result) {
+      if (err) {
+        console.error(err);
+        res.status(500).send("Error retrieving customer from database");
+      } else {
+        res.json(result.rows);
+        console.log(result.rows);
+      }
+    }
+  );
+});
 
 app.listen(3000, function () {
   console.log("Server is listening on port 3000. Ready to accept requests!");
