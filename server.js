@@ -20,6 +20,23 @@ app.get("/customers", function (req, res) {
   });
 });
 
+app.get("/customers/:id", function (req, res) {
+  const custId = parseInt(req.params.id);
+  db.query(
+    "SELECT id, name, city, phone FROM customers WHERE id = $1",
+    [custId],
+    function (err, result) {
+      if (err) {
+        console.error(err);
+        res.status(500).send("Error retrieving customer from database");
+      } else {
+        res.json(result.rows[0]);
+        console.log(result.rows[0]);
+      }
+    }
+  );
+});
+
 app.listen(3000, function () {
   console.log("Server is listening on port 3000. Ready to accept requests!");
 });
